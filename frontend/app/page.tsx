@@ -216,7 +216,6 @@ export default function Home() {
       <aside className="flex w-56 flex-col border-r bg-white shadow-sm">
         <div className="flex flex-col items-center gap-2 border-b px-4 py-5">
           <Image src="/glow-logo.jpeg" alt="Glow Clothings" width={100} height={67} className="rounded-lg object-cover" priority />
-          <p className="text-xs tracking-widest text-stone-400 uppercase">PDV Web</p>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {navItems.map((item) => (
