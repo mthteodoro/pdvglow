@@ -121,20 +121,28 @@ export default function Home() {
 
   async function salvarCliente(event: FormEvent) {
     event.preventDefault();
-    if (clienteEditId) await api.clientes.update(clienteEditId, clienteForm);
-    else await api.clientes.create(clienteForm);
-    setClienteForm(emptyCliente);
-    setClienteEditId(null);
-    await carregarDados();
+    try {
+      if (clienteEditId) await api.clientes.update(clienteEditId, clienteForm);
+      else await api.clientes.create(clienteForm);
+      setClienteForm(emptyCliente);
+      setClienteEditId(null);
+      await carregarDados();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Erro ao salvar cliente");
+    }
   }
 
   async function salvarProduto(event: FormEvent) {
     event.preventDefault();
-    if (produtoEditId) await api.produtos.update(produtoEditId, produtoForm);
-    else await api.produtos.create(produtoForm);
-    setProdutoForm(emptyProduto);
-    setProdutoEditId(null);
-    await carregarDados();
+    try {
+      if (produtoEditId) await api.produtos.update(produtoEditId, produtoForm);
+      else await api.produtos.create(produtoForm);
+      setProdutoForm(emptyProduto);
+      setProdutoEditId(null);
+      await carregarDados();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Erro ao salvar produto");
+    }
   }
 
   async function previewExcel() {
@@ -165,21 +173,29 @@ export default function Home() {
   }
 
   async function finalizarVenda() {
-    await api.vendas.create({
-      cliente_id: vendaCliente || undefined,
-      forma_pagamento: formaPagamento,
-      itens: carrinho.map((item) => ({ produto_id: item.produto.id, quantidade: item.quantidade })),
-    });
-    setCarrinho([]);
-    setVendaCliente("");
-    await carregarDados();
+    try {
+      await api.vendas.create({
+        cliente_id: vendaCliente || undefined,
+        forma_pagamento: formaPagamento,
+        itens: carrinho.map((item) => ({ produto_id: item.produto.id, quantidade: item.quantidade })),
+      });
+      setCarrinho([]);
+      setVendaCliente("");
+      await carregarDados();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Erro ao finalizar venda");
+    }
   }
 
   async function salvarMovimento(event: FormEvent) {
     event.preventDefault();
-    await api.financeiro.create(financeiroForm);
-    setFinanceiroForm({ tipo: "saida", descricao: "", valor: 0 });
-    await carregarDados();
+    try {
+      await api.financeiro.create(financeiroForm);
+      setFinanceiroForm({ tipo: "saida", descricao: "", valor: 0 });
+      await carregarDados();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Erro ao registrar movimento");
+    }
   }
 
   if (!sessionReady) return <main className="flex min-h-screen items-center justify-center"><p className="text-muted-foreground">Carregando...</p></main>;
