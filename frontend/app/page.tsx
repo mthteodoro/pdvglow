@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import Image from "next/image";
 import type { FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
