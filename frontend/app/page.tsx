@@ -259,8 +259,7 @@ export default function Home() {
 
           {/* Boas-vindas */}
           {activeTab === null && (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <Image src="/glow-logo.jpeg" alt="Glow Clothings" width={120} height={80} className="rounded-2xl object-cover shadow-lg mb-8" />
+            <div className="flex flex-col items-center pt-16 text-center">
               <h2 className="text-2xl font-semibold text-stone-800 mb-3">
                 Um bom dia de trabalho, {userName}!
               </h2>
