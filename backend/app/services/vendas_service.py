@@ -60,6 +60,5 @@ async def criar_venda(db: AsyncSession, payload: VendaCreate) -> Venda:
             )
         )
 
-    venda.itens = itens_venda
     await db.refresh(venda)
     return venda

@@ -1,4 +1,5 @@
 from datetime import datetime, time
+import zoneinfo
 from decimal import Decimal
 
 from sqlalchemy import case, func, select
@@ -22,7 +23,8 @@ async def criar_movimento(db: AsyncSession, payload: MovimentoCreate) -> Movimen
 
 
 async def dashboard(db: AsyncSession) -> DashboardOut:
-    hoje = datetime.combine(datetime.now().date(), time.min)
+    tz = zoneinfo.ZoneInfo("America/Sao_Paulo")
+    hoje = datetime.combine(datetime.now(tz).date(), time.min, tzinfo=tz)
 
     vendas_do_dia = await db.scalar(select(func.count(Venda.id)).where(Venda.created_at >= hoje))
     faturamento_do_dia = await db.scalar(select(func.coalesce(func.sum(Venda.total), 0)).where(Venda.created_at >= hoje))

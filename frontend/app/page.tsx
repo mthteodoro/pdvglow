@@ -108,8 +108,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (authenticated) carregarDados();
-  }, [authenticated, isAdmin]);
+    if (sessionReady && authenticated) carregarDados();
+  }, [sessionReady]);
 
   async function login(event: FormEvent) {
     event.preventDefault();
@@ -161,6 +161,12 @@ export default function Home() {
   function adicionarProdutoVenda() {
     const produto = produtos.find((item) => item.id === vendaProduto);
     if (!produto) return;
+    const noCarrinho = carrinho.find((item) => item.produto.id === produto.id)?.quantidade ?? 0;
+    if (noCarrinho + vendaQuantidade > produto.quantidade) {
+      setMessage(`Estoque insuficiente para ${produto.nome} (disponível: ${produto.quantidade - noCarrinho})`);
+      return;
+    }
+    setMessage("");
     setCarrinho((current) => {
       const existente = current.find((item) => item.produto.id === produto.id);
       if (existente) {
@@ -313,7 +319,7 @@ export default function Home() {
                         <td>{cliente.nome}</td><td>{cliente.telefone}</td><td>{cliente.email}</td>
                         <td className="flex gap-1">
                           <IconButton title="Editar" onClick={() => { setClienteEditId(cliente.id); setClienteForm({ nome: cliente.nome ?? "", telefone: cliente.telefone ?? "", email: cliente.email ?? "", observacoes: cliente.observacoes ?? "" }); }}><Edit size={16} /></IconButton>
-                          <IconButton title="Excluir" onClick={async () => { await api.clientes.remove(cliente.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
+                          <IconButton title="Excluir" onClick={async () => { if (!confirm(`Excluir ${cliente.nome}?`)) return; await api.clientes.remove(cliente.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
                         </td>
                       </tr>
                     ))}
@@ -360,7 +366,7 @@ export default function Home() {
                         <td>{produto.id}</td><td>{produto.nome}</td><td>{produto.quantidade}</td><td>{dinheiro.format(Number(produto.preco))}</td>
                         <td className="flex gap-1">
                           <IconButton title="Editar" onClick={() => { setProdutoEditId(produto.id); setProdutoForm(produto); }}><Edit size={16} /></IconButton>
-                          <IconButton title="Excluir" onClick={async () => { await api.produtos.remove(produto.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
+                          <IconButton title="Excluir" onClick={async () => { if (!confirm(`Excluir ${produto.nome}?`)) return; await api.produtos.remove(produto.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
                         </td>
                       </tr>
                     ))}

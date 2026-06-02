@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +12,7 @@ class VendaItemCreate(BaseModel):
 
 class VendaCreate(BaseModel):
     cliente_id: str | None = None
-    forma_pagamento: str
+    forma_pagamento: Literal["pix", "dinheiro", "credito", "debito"]
     itens: list[VendaItemCreate] = Field(min_length=1)
 
 

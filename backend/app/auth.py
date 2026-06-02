@@ -32,7 +32,7 @@ async def require_user(
 ) -> dict:
     settings = get_settings()
     if not settings.auth_required:
-        return {"sub": "local-dev"}
+        return {"sub": "local-dev", "app_metadata": {}}
     if not credentials:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token ausente")
 
@@ -45,4 +45,10 @@ async def require_user(
     except (jwt.PyJWTError, requests.RequestException) as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido") from exc
 
-    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Configuração de auth incompleta")
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Configuração de autenticação incompleta — configure SUPABASE_JWKS_URL ou SUPABASE_JWT_SECRET")
+
+
+def require_admin(user: Annotated[dict, Depends(require_user)]) -> dict:
+    if user.get("app_metadata", {}).get("role") != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acesso restrito a administradores")
+    return user
