@@ -169,15 +169,16 @@ export default function Home() {
 
   if (!authenticated) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <form onSubmit={login} className="w-full max-w-sm rounded-lg border border-zinc-800 bg-white p-5 shadow-xl">
-          <div className="mb-5 flex justify-center">
-            <Image src="/glow-logo.jpeg" alt="Glow Clothings" width={180} height={120} className="rounded-md object-cover" priority />
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-800 via-zinc-800 to-neutral-900 p-4">
+        <form onSubmit={login} className="w-full max-w-sm rounded-2xl bg-white/95 backdrop-blur-sm p-8 shadow-2xl">
+          <div className="mb-6 flex flex-col items-center gap-2">
+            <Image src="/glow-logo.jpeg" alt="Glow Clothings" width={160} height={107} className="rounded-xl object-cover shadow-md" priority />
+            <p className="text-xs tracking-widest text-stone-400 uppercase">Sistema de Gestão</p>
           </div>
           <div className="space-y-3">
-            <Input type="email" placeholder="email@glow.com" value={email} onChange={(event) => setEmail(event.target.value)} required />
+            <Input type="email" placeholder="E-mail" value={email} onChange={(event) => setEmail(event.target.value)} required />
             <Input type="password" placeholder="Senha" value={password} onChange={(event) => setPassword(event.target.value)} required />
-            <Button className="w-full" disabled={loading}>{loading ? "Entrando..." : "Entrar"}</Button>
+            <Button className="w-full bg-stone-800 hover:bg-stone-700 text-white" disabled={loading}>{loading ? "Entrando..." : "Entrar"}</Button>
             {message && <p className="text-sm text-destructive">{message}</p>}
           </div>
         </form>
