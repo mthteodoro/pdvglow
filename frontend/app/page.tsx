@@ -29,9 +29,10 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [activeTab, setActiveTab] = useState<Tab>("clientes");
+  const [activeTab, setActiveTab] = useState<Tab | null>(null);
 
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -89,14 +90,19 @@ export default function Home() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      const admin = data.session?.user?.app_metadata?.role === "admin";
+      const user = data.session?.user;
+      const admin = user?.app_metadata?.role === "admin";
+      const name = user?.user_metadata?.name || user?.email?.split("@")[0] || "vendedora";
       setAuthenticated(Boolean(data.session));
       setIsAdmin(admin);
+      setUserName(name);
       setSessionReady(true);
     });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user;
       setAuthenticated(Boolean(session));
-      setIsAdmin(session?.user?.app_metadata?.role === "admin");
+      setIsAdmin(user?.app_metadata?.role === "admin");
+      setUserName(user?.user_metadata?.name || user?.email?.split("@")[0] || "vendedora");
     });
     return () => data.subscription.unsubscribe();
   }, []);
@@ -251,6 +257,20 @@ export default function Home() {
             {isAdmin && <Metric title="Faturamento" value={dinheiro.format(Number(dashboard?.faturamento_do_dia ?? 0))} />}
             {isAdmin && <Metric title="Saldo" value={dinheiro.format(Number(dashboard?.saldo_financeiro ?? 0))} />}
           </section>
+
+          {/* Boas-vindas */}
+          {activeTab === null && (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <Image src="/glow-logo.jpeg" alt="Glow Clothings" width={120} height={80} className="rounded-2xl object-cover shadow-lg mb-8" />
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">
+                Um bom dia de trabalho, {userName}!
+              </h2>
+              <p className="text-stone-500 text-base max-w-sm leading-relaxed">
+                Seu brilho é radiante, o glow é natural e vem de dentro.<br />Siga iluminando!
+              </p>
+              <p className="mt-8 text-xs text-stone-400 tracking-widest uppercase">Selecione uma opção no menu ao lado</p>
+            </div>
+          )}
 
           {/* Aba Clientes */}
           {activeTab === "clientes" && (
