@@ -236,7 +236,7 @@ export default function Home() {
                   <tr key={cliente.id}>
                     <td>{cliente.nome}</td><td>{cliente.telefone}</td><td>{cliente.email}</td>
                     <td className="flex gap-1">
-                      <IconButton title="Editar" onClick={() => { setClienteEditId(cliente.id); setClienteForm(cliente); }}><Edit size={16} /></IconButton>
+                      <IconButton title="Editar" onClick={() => { setClienteEditId(cliente.id); setClienteForm({ nome: cliente.nome ?? '', telefone: cliente.telefone ?? '', email: cliente.email ?? '', observacoes: cliente.observacoes ?? '' }); }}><Edit size={16} /></IconButton>
                       <IconButton title="Excluir" onClick={async () => { await api.clientes.remove(cliente.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
                     </td>
                   </tr>
