@@ -23,8 +23,11 @@ async def criar_movimento(db: AsyncSession, payload: MovimentoCreate) -> Movimen
 
 
 async def dashboard(db: AsyncSession) -> DashboardOut:
-    tz = zoneinfo.ZoneInfo("America/Sao_Paulo")
-    hoje = datetime.combine(datetime.now(tz).date(), time.min, tzinfo=tz)
+    try:
+        tz = zoneinfo.ZoneInfo("America/Sao_Paulo")
+        hoje = datetime.combine(datetime.now(tz).date(), time.min, tzinfo=tz)
+    except Exception:
+        hoje = datetime.combine(datetime.now().date(), time.min)
 
     vendas_do_dia = await db.scalar(select(func.count(Venda.id)).where(Venda.created_at >= hoje))
     faturamento_do_dia = await db.scalar(select(func.coalesce(func.sum(Venda.total), 0)).where(Venda.created_at >= hoje))
