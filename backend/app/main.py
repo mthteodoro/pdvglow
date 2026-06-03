@@ -1,15 +1,20 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.routers import clientes, financeiro, produtos, vendas
 
+logger = logging.getLogger("glow")
 
 settings = get_settings()
 
 app = FastAPI(title=settings.app_name)
 
 _origins = settings.cors_origin_list
+logger.warning("CORS origins: %s", _origins)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
