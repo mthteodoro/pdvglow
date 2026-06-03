@@ -1,20 +1,27 @@
-import logging
+print(">>> iniciando app", flush=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import get_settings
-from app.routers import clientes, financeiro, produtos, vendas
+print(">>> fastapi importado", flush=True)
 
-logger = logging.getLogger("glow")
+from app.config import get_settings
+
+print(">>> config importado", flush=True)
+
+try:
+    from app.routers import clientes, financeiro, produtos, vendas
+    print(">>> routers importados", flush=True)
+except Exception as e:
+    print(f">>> ERRO nos routers: {e}", flush=True)
+    raise
 
 settings = get_settings()
+print(f">>> settings ok — CORS: {settings.cors_origin_list}", flush=True)
 
 app = FastAPI(title=settings.app_name)
 
 _origins = settings.cors_origin_list
-logger.warning("CORS origins: %s", _origins)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
@@ -23,10 +30,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print(">>> middleware CORS adicionado", flush=True)
+
 app.include_router(clientes.router)
 app.include_router(produtos.router)
 app.include_router(vendas.router)
 app.include_router(financeiro.router)
+
+
+@app.options("/{path:path}")
+async def preflight_handler():
+    return {}
 
 
 @app.get("/health")
