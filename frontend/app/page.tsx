@@ -122,9 +122,15 @@ export default function Home() {
 
   async function salvarCliente(event: FormEvent) {
     event.preventDefault();
+    const payload = {
+      ...clienteForm,
+      email: clienteForm.email || undefined,
+      telefone: clienteForm.telefone || undefined,
+      observacoes: clienteForm.observacoes || undefined,
+    };
     try {
-      if (clienteEditId) await api.clientes.update(clienteEditId, clienteForm);
-      else await api.clientes.create(clienteForm);
+      if (clienteEditId) await api.clientes.update(clienteEditId, payload);
+      else await api.clientes.create(payload);
       setClienteForm(emptyCliente);
       setClienteEditId(null);
       await carregarDados();
