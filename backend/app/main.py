@@ -38,11 +38,6 @@ app.include_router(vendas.router)
 app.include_router(financeiro.router)
 
 
-@app.options("/{path:path}")
-async def preflight_handler():
-    return {}
-
-
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": settings.app_name}

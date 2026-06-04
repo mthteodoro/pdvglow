@@ -40,6 +40,8 @@ glow-clothings/
 3. Em Authentication, crie ao menos um usuario por email/senha.
 4. Copie a connection string PostgreSQL e as chaves do projeto.
 
+Se voce ja tentou executar outro schema antes e aparecer erro de tipos incompativeis entre `uuid` e `text`, execute primeiro `database/reset.sql` no SQL Editor e depois rode novamente `database/schema.sql`. O reset apaga as tabelas do PDV, entao use apenas em ambiente inicial ou sem dados reais.
+
 Observacao: o schema habilita RLS e politicas para usuarios autenticados. O backend tambem valida JWT do Supabase antes de acessar os endpoints.
 
 ## Variaveis de ambiente
