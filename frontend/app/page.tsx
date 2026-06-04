@@ -57,6 +57,7 @@ export default function Home() {
   const [carrinho, setCarrinho] = useState<Array<{ produto: Produto; quantidade: number }>>([]);
 
   const [financeiroForm, setFinanceiroForm] = useState({ tipo: "saida" as "entrada" | "saida", descricao: "", valor: 0 });
+  const [savingProduto, setSavingProduto] = useState(false);
 
   const totalVenda = useMemo(
     () => carrinho.reduce((total, item) => total + Number(item.produto.preco) * item.quantidade, 0),
@@ -134,14 +135,22 @@ export default function Home() {
 
   async function salvarProduto(event: FormEvent) {
     event.preventDefault();
+    setSavingProduto(true);
+    setMessage("");
     try {
-      if (produtoEditId) await api.produtos.update(produtoEditId, produtoForm);
-      else await api.produtos.create(produtoForm);
+      if (produtoEditId) {
+        const updated = await api.produtos.update(produtoEditId, produtoForm);
+        setProdutos((prev) => prev.map((p) => (p.id === produtoEditId ? updated : p)));
+      } else {
+        const created = await api.produtos.create(produtoForm);
+        setProdutos((prev) => [...prev, created].sort((a, b) => a.nome.localeCompare(b.nome)));
+      }
       setProdutoForm(emptyProduto);
       setProdutoEditId(null);
-      await carregarDados();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Erro ao salvar produto");
+    } finally {
+      setSavingProduto(false);
     }
   }
 
@@ -342,7 +351,7 @@ export default function Home() {
                       <Field label="Quantidade"><Input type="number" min={0} value={produtoForm.quantidade} onChange={(e) => setProdutoForm({ ...produtoForm, quantidade: Number(e.target.value) })} /></Field>
                       <Field label="Preço"><Input type="number" min={0} step="0.01" value={produtoForm.preco} onChange={(e) => setProdutoForm({ ...produtoForm, preco: Number(e.target.value) })} /></Field>
                     </div>
-                    <Button><Save size={16} />{produtoEditId ? "Salvar produto" : "Criar produto"}</Button>
+                    <Button disabled={savingProduto}><Save size={16} />{savingProduto ? "Salvando..." : produtoEditId ? "Salvar produto" : "Criar produto"}</Button>
                   </form>
                   <div className="border-t pt-4">
                     <Field label="Importar Excel .xlsx">
@@ -366,7 +375,7 @@ export default function Home() {
                         <td>{produto.id}</td><td>{produto.nome}</td><td>{produto.quantidade}</td><td>{dinheiro.format(Number(produto.preco))}</td>
                         <td className="flex gap-1">
                           <IconButton title="Editar" onClick={() => { setProdutoEditId(produto.id); setProdutoForm(produto); }}><Edit size={16} /></IconButton>
-                          <IconButton title="Excluir" onClick={async () => { if (!confirm(`Excluir ${produto.nome}?`)) return; await api.produtos.remove(produto.id); await carregarDados(); }}><Trash2 size={16} /></IconButton>
+                          <IconButton title="Excluir" onClick={async () => { if (!confirm(`Excluir ${produto.nome}?`)) return; await api.produtos.remove(produto.id); setProdutos((prev) => prev.filter((p) => p.id !== produto.id)); }}><Trash2 size={16} /></IconButton>
                         </td>
                       </tr>
                     ))}
