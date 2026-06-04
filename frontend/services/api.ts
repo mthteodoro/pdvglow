@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = "/proxy";
 
 async function authHeaders() {
   const { data } = await supabase.auth.getSession();
